@@ -88,8 +88,8 @@ your-vault/
 ├── papers/                # 论文笔记（以 arxiv ID 命名）
 │   └── 2601.05242.md
 ├── knowledge/
-│   └── Summary/           # 综述报告（按主题命名）
-│       └── LLM-RL_GRPO_Series.md
+│   └── Summary/           # 综述报告（按分类中文名命名）
+│       └── 大模型强化学习.md
 └── Paper_Index.md         # 论文数据库索引
 ```
 
