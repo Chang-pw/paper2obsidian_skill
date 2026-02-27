@@ -13,6 +13,12 @@ description: 从 arxiv 下载论文 PDF，提取文本和图片，在 Obsidian v
 - Python 3 + pymupdf (`pip install pymupdf`)
 - 环境变量 `OBSIDIAN_VAULT` 指向你的 Obsidian vault 路径
 
+## 重要规则
+
+- 所有文件操作（下载、提取、写入）必须直接在 `$OBSIDIAN_VAULT` 目录下进行
+- 禁止使用 `/tmp` 或其他临时目录，避免触发权限确认
+- curl 下载直接 `-o` 到目标路径，pymupdf 提取直接写入目标路径
+
 ## Vault 目录结构
 
 ```
