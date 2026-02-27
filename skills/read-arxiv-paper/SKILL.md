@@ -136,7 +136,7 @@ date_added: YYYY-MM-DD
 
 用 3-5 段话详细说明背景、问题、现有方法的不足。
 
-![Figure X: 说明|500](../assets/png/xxxx.xxxxx/fig1.png)
+![Figure X: 说明|600](../assets/png/xxxx.xxxxx/fig1.png)
 *Figure X: 中文说明*
 
 ---
@@ -145,7 +145,7 @@ date_added: YYYY-MM-DD
 
 像写技术博客一样分步骤讲解。可以用公式，但每个公式都要有直觉解释。
 
-![Figure X: 方法概览|500](../assets/png/xxxx.xxxxx/fig2.png)
+![Figure X: 方法概览|600](../assets/png/xxxx.xxxxx/fig2.png)
 *Figure X: 中文说明*
 
 ---
@@ -154,7 +154,7 @@ date_added: YYYY-MM-DD
 
 用自然语言描述关键发现，辅以具体数字。不要直接贴表格。
 
-![Figure X: 实验结果|500](../assets/png/xxxx.xxxxx/fig3.png)
+![Figure X: 实验结果|600](../assets/png/xxxx.xxxxx/fig3.png)
 *Figure X: 中文说明*
 
 ---
@@ -180,11 +180,11 @@ date_added: YYYY-MM-DD
 ## 图片路径规则
 
 所有图片统一存放在 `assets/png/{arxiv_id}/` 下。
-笔记中引用图片使用相对路径，并加 `|500` 控制宽度：`![Figure X: 说明|500](../assets/png/{arxiv_id}/figX.png)`
+笔记中引用图片使用相对路径，并加 `|600` 控制宽度：`![Figure X: 说明|600](../assets/png/{arxiv_id}/figX.png)`
 （因为笔记在 `papers/` 目录下，需要 `../` 回到 vault 根目录）
 
 也可以使用 arxiv HTML 的在线 URL 作为图片源（无需下载）：
-`![Figure X: 说明|500](https://arxiv.org/html/{arxiv_id}v1/x1.png)`
+`![Figure X: 说明|600](https://arxiv.org/html/{arxiv_id}v1/x1.png)`
 
 PDF 链接同理：`../assets/pdfs/{arxiv_id}.pdf`
 
