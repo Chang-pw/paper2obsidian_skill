@@ -1,28 +1,58 @@
 ---
 name: paper-index
-description: 扫描 Obsidian vault 中的论文笔记，自动生成按主题、作者、阅读状态分类的索引，维护论文之间的双链关联
+description: 扫描 Obsidian vault 中的论文笔记，生成和更新论文管理索引表格（支持 Dataview 动态表格和静态 Markdown 表格两种模式）
 ---
 
 # Paper Index
 
-扫描 `$OBSIDIAN_VAULT/papers/` 目录下的所有论文笔记，读取 frontmatter，生成和更新索引文件。
+维护论文库的索引和管理表格。
 
-## 索引文件
+## 触发条件
 
-生成以下索引到 `$OBSIDIAN_VAULT/indexes/` 目录：
+当用户要求"更新索引"、"整理论文"、"生成论文列表"时加载此 skill。
 
-### reading-list.md
-按阅读状态分类（unread / reading / done），显示标题、作者、评分。
+## 工作流程
 
-### by-topic.md
-按 frontmatter 中的 tags 分类，同一个 tag 下的论文归为一组。
+1. 扫描 `$OBSIDIAN_VAULT/papers/` 目录下所有 `.md` 文件
+2. 读取每篇笔记的 YAML frontmatter（title, authors, year, arxiv, tags, status, rating, date_added）
+3. 生成/更新 `$OBSIDIAN_VAULT/Paper_Index.md`
 
-### by-author.md
-按第一作者分类。
+## 静态索引格式
 
-## 格式要求
+如果用户没有安装 Dataview 插件，生成静态 Markdown 表格：
 
-- 使用 Obsidian 双链：`[[papers/arxiv_id|论文标题]]`
-- 每篇论文显示：标题、年份、评分（如有）
-- 索引文件顶部标注自动生成时间
-- 如果 vault 中有 Dataview 插件，额外生成一个 `dataview-queries.md` 包含常用查询
+```markdown
+# 📚 论文管理中心
+
+> 最后更新：YYYY-MM-DD
+
+## 全部论文
+
+| 标题 | 一作 | 年份 | 标签 | 状态 | 评分 | arXiv |
+|------|------|------|------|------|------|-------|
+| [论文标题](papers/文件名.md) | 作者 | 2026 | tag1, tag2 | unread | ⭐⭐⭐ | [2601.05242](https://arxiv.org/abs/2601.05242) |
+
+## 按主题分类
+
+### Reinforcement Learning
+| 标题 | 年份 | 状态 | 核心贡献 |
+|------|------|------|----------|
+| [GDPO](papers/GDPO_xxx.md) | 2026 | unread | 解耦多奖励归一化 |
+
+### （其他主题按 tags 自动分组）
+
+## 按时间线
+
+### 2026
+- [论文标题](papers/文件名.md) — 一句话总结
+
+### 2025
+- ...
+```
+
+## 更新规则
+
+- 每次添加新论文后自动提示更新索引
+- 保留用户手动添加的备注和分组
+- 按 tags 自动分组，同一篇论文可以出现在多个主题下
+- 表格按 date_added 倒序排列（最新的在最上面）
