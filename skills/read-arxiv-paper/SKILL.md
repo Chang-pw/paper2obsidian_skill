@@ -25,8 +25,8 @@ vault/
 │           ├── fig1.png
 │           ├── fig2.png
 │           └── ...
-├── papers/                      # 论文笔记
-│   └── GDPO_Group_reward-Decoupled_xxx.md
+├── papers/                      # 论文笔记（以 arxiv ID 命名）
+│   └── 2601.05242.md
 └── Paper_Index.md               # 索引（可选）
 ```
 
@@ -92,7 +92,7 @@ EOF
 读取论文全文，查看可用图片，严格按照下面的模板生成笔记。
 写入 `$OBSIDIAN_VAULT/papers/` 目录。
 
-**文件命名规则：** 论文英文标题（空格用下划线，去掉特殊字符），如 `GDPO_Group_reward-Decoupled_Normalization_Policy_Optimization.md`
+**文件命名规则：** 使用 arxiv ID 作为文件名，如 `2601.05242.md`。这样保证唯一性，且 Obsidian wikilink 可以直接用 `[[2601.05242]]` 链接。
 
 ## 笔记模板
 
@@ -125,7 +125,7 @@ date_added: YYYY-MM-DD
 
 用 3-5 段话详细说明背景、问题、现有方法的不足。
 
-![Figure X: 说明](../assets/png/xxxx.xxxxx/fig1.png)
+![Figure X: 说明|500](../assets/png/xxxx.xxxxx/fig1.png)
 *Figure X: 中文说明*
 
 ---
@@ -134,7 +134,7 @@ date_added: YYYY-MM-DD
 
 像写技术博客一样分步骤讲解。可以用公式，但每个公式都要有直觉解释。
 
-![Figure X: 方法概览](../assets/png/xxxx.xxxxx/fig2.png)
+![Figure X: 方法概览|500](../assets/png/xxxx.xxxxx/fig2.png)
 *Figure X: 中文说明*
 
 ---
@@ -143,7 +143,7 @@ date_added: YYYY-MM-DD
 
 用自然语言描述关键发现，辅以具体数字。不要直接贴表格。
 
-![Figure X: 实验结果](../assets/png/xxxx.xxxxx/fig3.png)
+![Figure X: 实验结果|500](../assets/png/xxxx.xxxxx/fig3.png)
 *Figure X: 中文说明*
 
 ---
@@ -162,18 +162,18 @@ date_added: YYYY-MM-DD
 
 ## 🔗 相关论文
 
-- 论文英文标题 — [arXiv](https://arxiv.org/abs/xxxx.xxxxx) | [[papers/论文文件名]]
+- 论文英文标题 — [arXiv](https://arxiv.org/abs/xxxx.xxxxx) | [[xxxx.xxxxx]]
   与本文的关系
 ```
 
 ## 图片路径规则
 
 所有图片统一存放在 `assets/png/{arxiv_id}/` 下。
-笔记中引用图片使用相对路径：`../assets/png/{arxiv_id}/figX.png`
+笔记中引用图片使用相对路径，并加 `|500` 控制宽度：`![Figure X: 说明|500](../assets/png/{arxiv_id}/figX.png)`
 （因为笔记在 `papers/` 目录下，需要 `../` 回到 vault 根目录）
 
 也可以使用 arxiv HTML 的在线 URL 作为图片源（无需下载）：
-`https://arxiv.org/html/{arxiv_id}v1/x1.png`
+`![Figure X: 说明|500](https://arxiv.org/html/{arxiv_id}v1/x1.png)`
 
 PDF 链接同理：`../assets/pdfs/{arxiv_id}.pdf`
 

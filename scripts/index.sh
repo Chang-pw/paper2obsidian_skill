@@ -22,7 +22,7 @@ for f in "$PAPERS_DIR"/*.md; do
         AUTHORS=$(grep '^authors:' "$f" | head -1)
         YEAR=$(grep '^year:' "$f" | head -1)
         FNAME=$(basename "$f" .md)
-        PAPER_LIST+="- [[papers/$FNAME|$TITLE]] $TAGS $YEAR\n"
+        PAPER_LIST+="- [[$FNAME|$TITLE]] $TAGS $YEAR\n"
     fi
 done
 
@@ -39,15 +39,15 @@ $(echo -e "$PAPER_LIST")
 
 ### 📖 待读
 $(grep -rl 'status: unread' "$PAPERS_DIR" 2>/dev/null \
-    | while read f; do echo "- [[papers/$(basename "$f" .md)]]"; done)
+    | while read f; do echo "- [[$(basename "$f" .md)]]"; done)
 
 ### 📝 在读
 $(grep -rl 'status: reading' "$PAPERS_DIR" 2>/dev/null \
-    | while read f; do echo "- [[papers/$(basename "$f" .md)]]"; done)
+    | while read f; do echo "- [[$(basename "$f" .md)]]"; done)
 
 ### ✅ 已读
 $(grep -rl 'status: done' "$PAPERS_DIR" 2>/dev/null \
-    | while read f; do echo "- [[papers/$(basename "$f" .md)]]"; done)
+    | while read f; do echo "- [[$(basename "$f" .md)]]"; done)
 EOF
 
 echo "✅ 索引已更新: $INDEX_DIR/"
