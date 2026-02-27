@@ -40,6 +40,10 @@ vault/
 
 当用户给你一个 arxiv URL 或 ID 时，按以下步骤执行：
 
+### Step 0: 查重
+
+先检查 `$OBSIDIAN_VAULT/papers/{ARXIV_ID}.md` 是否已存在。如果已存在，告知用户该论文已有笔记，跳过下载和生成，直接进入下一篇（如果有多篇的话）。
+
 ### Step 1: 下载 PDF
 
 ```bash
