@@ -49,56 +49,42 @@ curl -sL "https://arxiv.org/pdf/$ARXIV_ID.pdf" \
   -o "$OBSIDIAN_VAULT/assets/pdfs/$ARXIV_ID.pdf"
 ```
 
-### Step 2: 从 arxiv HTML 版本提取图片
+### Step 2: 提取论文全文
 
-优先从 arxiv HTML 版本提取（精确到每个 Figure/Table）。
+从 HTML 版本或 PDF 提取全文用于生成笔记。
 
-```bash
-# 检查 HTML 版本是否可用
-curl -sI "https://arxiv.org/html/${ARXIV_ID}v1" | head -1
-```
+### Step 3: 生成论文笔记
 
-如果 HTML 版本可用，提取图片：
+读取论文全文，严格按照下面的模板生成笔记。
+写入 `$OBSIDIAN_VAULT/papers/` 目录。
+
+**文件命名规则：** 使用 arxiv ID 作为文件名，如 `2601.05242.md`。这样保证唯一性，且 Obsidian wikilink 可以直接用 `[[2601.05242]]` 链接。
+
+### Step 4: 按需下载笔记中引用的图片
+
+笔记写完后，只下载笔记中实际 `![...]()` 引用到的图片，不要把论文所有图都下载。
+
+优先从 arxiv HTML 版本下载（精确到每个 Figure）：
 
 ```bash
 FIG_DIR="$OBSIDIAN_VAULT/assets/png/$ARXIV_ID"
 mkdir -p "$FIG_DIR"
-# 图片 URL 通常为 https://arxiv.org/html/${ARXIV_ID}v1/x1.png 等
+# 只下载笔记中引用的图，例如笔记引用了 fig1 和 fig3：
 curl -sL "https://arxiv.org/html/${ARXIV_ID}v1/x1.png" -o "$FIG_DIR/fig1.png"
-# ... 对每个图片重复
+curl -sL "https://arxiv.org/html/${ARXIV_ID}v1/x3.png" -o "$FIG_DIR/fig3.png"
 ```
 
-如果 HTML 版本不可用，回退到 pymupdf 提取：
+如果 HTML 版本不可用，回退到 pymupdf 从 PDF 提取对应页面的图片。
 
-```bash
-python3 << 'EOF'
-import fitz, os
-arxiv_id = os.environ.get("ARXIV_ID")
-vault = os.environ.get("OBSIDIAN_VAULT")
-pdf_path = f"{vault}/assets/pdfs/{arxiv_id}.pdf"
-fig_dir = f"{vault}/assets/png/{arxiv_id}"
-os.makedirs(fig_dir, exist_ok=True)
-doc = fitz.open(pdf_path)
-for pn in range(len(doc)):
-    for idx, img in enumerate(doc[pn].get_images(full=True)):
-        pix = fitz.Pixmap(doc, img[0])
-        if pix.n >= 5:
-            pix = fitz.Pixmap(fitz.csRGB, pix)
-        pix.save(f"{fig_dir}/page{pn+1}_img{idx+1}.png")
-doc.close()
-EOF
-```
+## 写作风格偏好（用户画像：大模型研究者）
 
-### Step 3: 提取论文全文
+笔记的侧重点按以下优先级排列：
 
-从 HTML 版本或 PDF 提取全文用于生成笔记。
-
-### Step 4: 生成论文笔记
-
-读取论文全文，查看可用图片，严格按照下面的模板生成笔记。
-写入 `$OBSIDIAN_VAULT/papers/` 目录。
-
-**文件命名规则：** 使用 arxiv ID 作为文件名，如 `2601.05242.md`。这样保证唯一性，且 Obsidian wikilink 可以直接用 `[[2601.05242]]` 链接。
+1. **研究动机与问题（重点）：** 这篇论文要解决什么问题？为什么重要？现有方法（包括具体哪些工作）存在什么缺陷？要讲清楚 motivation chain，让读者理解"为什么需要这篇论文"。这部分要详细，至少 3-5 段。
+2. **核心方法（最重点）：** 方法的每一步都要讲清楚，包括数学直觉、设计动机、与前人方法的对比。公式不能只列出来，要解释每个符号的含义和为什么这样设计。这部分是笔记的核心，要最详细。
+3. **实验与结果（简要）：** 不需要逐个数据集罗列数字，只需要用 2-3 段自然语言总结关键发现和 takeaway。重点说明实验是否验证了方法的核心 claim。
+4. **消融实验（简要）：** 消融发现就简要提及。
+5. **个人思考（保留）：** 优点、局限、对后续研究的启发。
 
 ## 笔记模板
 
@@ -191,7 +177,9 @@ PDF 链接同理：`../assets/pdfs/{arxiv_id}.pdf`
 
 ## 质量要求
 
-- 核心方法部分至少 500 字，像写 blog 一样深入浅出
-- 每张图都必须有中文说明和详细解读
-- 实验结果用自然语言描述，不要直接贴表格
-- 整篇笔记至少 2000 字
+- 研究动机与现状部分至少 300 字，讲清楚 problem 和 existing work 的不足
+- 核心方法部分至少 500 字，像写 blog 一样深入浅出，公式要有直觉解释
+- 实验部分简要总结 key takeaway 即可，不需要面面俱到
+- 只下载和引用对理解方法有帮助的关键 Figure（通常 2-4 张），不要贪多
+- 每张引用的图都必须有中文说明
+- 整篇笔记至少 1500 字
