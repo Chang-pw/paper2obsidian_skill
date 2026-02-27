@@ -87,6 +87,16 @@ curl -sL "https://arxiv.org/html/${ARXIV_ID}v1/x3.png" -o "$FIG_DIR/fig3.png"
 
 如果 HTML 版本不可用，回退到 pymupdf 从 PDF 提取对应页面的图片。
 
+### Step 5: 更新论文索引
+
+所有论文笔记写完后，执行 `paper-index` skill 更新 `$OBSIDIAN_VAULT/Paper_Index.md`。
+
+传入信息：
+- 新增论文的 arxiv ID 列表
+- 每篇论文的 title、一作、年份、分类、标签、简称、一句话核心贡献（从刚写完的笔记 frontmatter 和内容中提取）
+
+注意：如果一次读了多篇论文，等全部笔记写完后再统一执行一次 index 更新，不要每篇都更新一次。
+
 ## 写作风格偏好（用户画像：大模型研究者）
 
 笔记的侧重点按以下优先级排列：
@@ -106,8 +116,6 @@ authors: [作者1, 作者2, 作者3]
 year: 2025
 arxiv: "xxxx.xxxxx"
 tags: [tag1, tag2, tag3]
-status: unread
-rating: 
 date_added: YYYY-MM-DD
 ---
 

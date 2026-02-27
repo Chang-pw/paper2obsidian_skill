@@ -1,58 +1,67 @@
 ---
 name: paper-index
-description: 扫描 Obsidian vault 中的论文笔记，生成和更新论文管理索引表格（支持 Dataview 动态表格和静态 Markdown 表格两种模式）
+description: 扫描 Obsidian vault 中的论文笔记，生成和更新论文数据库索引（按分类自动分表）
 ---
 
 # Paper Index
 
-维护论文库的索引和管理表格。
+维护论文库的索引数据库。
 
 ## 触发条件
 
 当用户要求"更新索引"、"整理论文"、"生成论文列表"时加载此 skill。
+也会在 read-arxiv-paper skill 完成后自动执行。
 
 ## 工作流程
 
 1. 扫描 `$OBSIDIAN_VAULT/papers/` 目录下所有 `.md` 文件
-2. 读取每篇笔记的 YAML frontmatter（title, authors, year, arxiv, tags, status, rating, date_added）
-3. 生成/更新 `$OBSIDIAN_VAULT/Paper_Index.md`
+2. 读取每篇笔记的 YAML frontmatter（title, authors, year, arxiv, tags）
+3. 读取现有的 `$OBSIDIAN_VAULT/Paper_Index.md`（如果存在）
+4. 将新论文追加到总表和对应分类子表中，不要覆盖已有条目
+5. 如果论文的分类在现有索引中不存在，新建一个分类 section
 
-## 静态索引格式
+## 分类规则
 
-如果用户没有安装 Dataview 插件，生成静态 Markdown 表格：
+根据论文的 tags 判断分类。常见分类映射：
+
+- `reinforcement-learning`, `GRPO`, `PPO`, `RLHF` → **LLM-RL**（大模型强化学习）
+- `alignment`, `DPO`, `preference` → **LLM-Alignment**（大模型对齐）
+- `attention`, `transformer`, `architecture` → **Architecture**（模型架构）
+- `reasoning`, `chain-of-thought`, `math` → **Reasoning**（推理）
+- `data`, `pretraining`, `scaling` → **Pretraining**（预训练）
+
+如果一篇论文的 tags 跨多个分类，放入最相关的那个分类。分类名写在总表的"分类"列中。
+遇到无法归类的新领域时，自行创建合理的分类名。
+
+## 索引格式
 
 ```markdown
-# 📚 论文管理中心
+# 📚 论文数据库
 
 > 最后更新：YYYY-MM-DD
 
+---
+
 ## 全部论文
 
-| 标题 | 一作 | 年份 | 标签 | 状态 | 评分 | arXiv |
-|------|------|------|------|------|------|-------|
-| [论文标题](papers/文件名.md) | 作者 | 2026 | tag1, tag2 | unread | ⭐⭐⭐ | [2601.05242](https://arxiv.org/abs/2601.05242) |
+| arXiv | 标题 | 一作 | 年份 | 分类 | 标签 |
+|-------|------|------|------|------|------|
+| [[xxxx.xxxxx]] | 论文标题 | 一作 | 年份 | 分类名 | tag1, tag2 |
 
-## 按主题分类
+---
 
-### Reinforcement Learning
-| 标题 | 年份 | 状态 | 核心贡献 |
-|------|------|------|----------|
-| [GDPO](papers/GDPO_xxx.md) | 2026 | unread | 解耦多奖励归一化 |
+## 按分类
 
-### （其他主题按 tags 自动分组）
+### 分类名（中文说明）
 
-## 按时间线
-
-### 2026
-- [论文标题](papers/文件名.md) — 一句话总结
-
-### 2025
-- ...
+| arXiv | 简称 | 核心贡献 | 年份 |
+|-------|------|----------|------|
+| [[xxxx.xxxxx]] | 简称 | 一句话贡献 | 年份 |
 ```
 
 ## 更新规则
 
-- 每次添加新论文后自动提示更新索引
-- 保留用户手动添加的备注和分组
-- 按 tags 自动分组，同一篇论文可以出现在多个主题下
-- 表格按 date_added 倒序排列（最新的在最上面）
+- 新论文追加到总表末尾，同时追加到对应分类子表
+- 已存在的条目（按 arxiv ID 判断）不要重复添加
+- 保留用户手动添加的备注和自定义 section
+- 更新"最后更新"日期
