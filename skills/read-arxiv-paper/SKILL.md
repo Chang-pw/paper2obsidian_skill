@@ -13,37 +13,53 @@ description: 从 arxiv 下载论文 PDF，提取文本和图片，在 Obsidian v
 - Python 3 + pymupdf (`pip install pymupdf`)
 - 环境变量 `OBSIDIAN_VAULT` 指向你的 Obsidian vault 路径
 
+## Vault 目录结构
+
+```
+vault/
+├── assets/
+│   ├── pdfs/                    # 论文 PDF
+│   │   └── 2601.05242.pdf
+│   └── png/                     # 论文图片（按 arxiv ID 分子目录）
+│       └── 2601.05242/
+│           ├── fig1.png
+│           ├── fig2.png
+│           └── ...
+├── papers/                      # 论文笔记
+│   └── GDPO_Group_reward-Decoupled_xxx.md
+└── Paper_Index.md               # 索引（可选）
+```
+
 ## 工作流程
 
 当用户给你一个 arxiv URL 或 ID 时，按以下步骤执行：
 
-### Step 1: 下载 PDF 和获取元数据
+### Step 1: 下载 PDF
 
 ```bash
 ARXIV_ID="从URL中提取的ID，如 2601.05242"
-mkdir -p "$OBSIDIAN_VAULT/pdfs"
-curl -sL "https://arxiv.org/pdf/$ARXIV_ID.pdf" -o "$OBSIDIAN_VAULT/pdfs/$ARXIV_ID.pdf"
+mkdir -p "$OBSIDIAN_VAULT/assets/pdfs"
+curl -sL "https://arxiv.org/pdf/$ARXIV_ID.pdf" \
+  -o "$OBSIDIAN_VAULT/assets/pdfs/$ARXIV_ID.pdf"
 ```
 
 ### Step 2: 从 arxiv HTML 版本提取图片
 
-优先从 arxiv 的 HTML 版本提取图片（精确到每个 Figure/Table），而不是从 PDF 整页渲染。
+优先从 arxiv HTML 版本提取（精确到每个 Figure/Table）。
 
 ```bash
 # 检查 HTML 版本是否可用
 curl -sI "https://arxiv.org/html/${ARXIV_ID}v1" | head -1
 ```
 
-如果 HTML 版本可用，从 HTML 中提取每个 figure 的图片 URL：
-- 图片 URL 格式通常为: `https://arxiv.org/html/${ARXIV_ID}v1/x1.png`, `x2.png` 等
-- 或者 `extracted/figures/` 路径下的图片
+如果 HTML 版本可用，提取图片：
 
 ```bash
-FIG_DIR="$OBSIDIAN_VAULT/figures/$ARXIV_ID"
+FIG_DIR="$OBSIDIAN_VAULT/assets/png/$ARXIV_ID"
 mkdir -p "$FIG_DIR"
-# 下载每个 figure 图片，命名为 fig1.png, fig2.png 等
+# 图片 URL 通常为 https://arxiv.org/html/${ARXIV_ID}v1/x1.png 等
+# 下载每个 figure，命名为 fig1.png, fig2.png ...
 curl -sL "https://arxiv.org/html/${ARXIV_ID}v1/x1.png" -o "$FIG_DIR/fig1.png"
-# ... 对每个图片重复
 ```
 
 如果 HTML 版本不可用，回退到 pymupdf 提取：
@@ -51,19 +67,12 @@ curl -sL "https://arxiv.org/html/${ARXIV_ID}v1/x1.png" -o "$FIG_DIR/fig1.png"
 ```bash
 python3 << 'EOF'
 import fitz, os
-
 arxiv_id = os.environ.get("ARXIV_ID")
 vault = os.environ.get("OBSIDIAN_VAULT")
-pdf_path = f"{vault}/pdfs/{arxiv_id}.pdf"
-fig_dir = f"{vault}/figures/{arxiv_id}"
+pdf_path = f"{vault}/assets/pdfs/{arxiv_id}.pdf"
+fig_dir = f"{vault}/assets/png/{arxiv_id}"
 os.makedirs(fig_dir, exist_ok=True)
-
 doc = fitz.open(pdf_path)
-# 提取全文
-with open(f"/tmp/{arxiv_id}_text.md", "w") as f:
-    for page in doc:
-        f.write(page.get_text() + "\n\n")
-# 提取嵌入图片
 for pn in range(len(doc)):
     for idx, img in enumerate(doc[pn].get_images(full=True)):
         pix = fitz.Pixmap(doc, img[0])
@@ -76,13 +85,14 @@ EOF
 
 ### Step 3: 提取论文全文
 
-从 HTML 版本或 PDF 提取论文全文用于生成笔记。
+从 HTML 版本或 PDF 提取全文用于生成笔记。
 
 ### Step 4: 生成论文笔记
 
 读取论文全文，查看可用图片，严格按照下面的模板生成笔记。
+写入 `$OBSIDIAN_VAULT/papers/` 目录。
 
-**文件命名规则：** 笔记文件名使用论文英文标题（空格替换为下划线，去掉特殊字符），如 `GDPO_Group_reward-Decoupled_Normalization_Policy_Optimization.md`
+**文件命名规则：** 论文英文标题（空格用下划线，去掉特殊字符），如 `GDPO_Group_reward-Decoupled_Normalization_Policy_Optimization.md`
 
 ## 笔记模板
 
@@ -101,117 +111,71 @@ date_added: YYYY-MM-DD
 # 论文完整英文标题
 # 论文中文翻译标题
 
-> **一句话总结：** 用一句通俗的话概括这篇论文最核心的贡献
+> **一句话总结：** 用一句通俗的话概括核心贡献
 
 ## 📋 基本信息
 
 - **作者：** 作者1, 作者2 等（机构）
 - **发表：** 会议/期刊, 月份 年份
-- **链接：** [arXiv](https://arxiv.org/abs/xxxx.xxxxx) | [PDF](https://arxiv.org/pdf/xxxx.xxxxx.pdf) | [项目主页](如有)
+- **链接：** [arXiv](https://arxiv.org/abs/xxxx.xxxxx) | [PDF](../assets/pdfs/xxxx.xxxxx.pdf) | [项目主页](如有)
 
 ---
 
 ## 🎯 研究动机与问题
 
 用 3-5 段话详细说明背景、问题、现有方法的不足。
-像写 blog 一样，让读者理解"为什么需要这篇论文"。
 
-![Figure X: 说明](图片URL或本地路径)
-*Figure X: 中文说明，解释图中展示的核心问题*
+![Figure X: 说明](../assets/png/xxxx.xxxxx/fig1.png)
+*Figure X: 中文说明*
 
 ---
 
 ## 💡 核心方法
 
-像写技术博客一样，用通俗易懂的语言分步骤讲解方法。
-不要只翻译原文，要用自己的话重新组织。
-可以用公式，但每个公式都要有直觉解释。
+像写技术博客一样分步骤讲解。可以用公式，但每个公式都要有直觉解释。
 
-### 子标题1
-详细解释...
-
-![Figure X: 方法概览](图片URL或本地路径)
-*Figure X: 中文说明，逐步解释图中的组件和数据流*
-
-### 子标题2
-详细解释...
-
-### 关键创新点
-- 创新点1：为什么这样设计，好在哪里
-- 创新点2：...
+![Figure X: 方法概览](../assets/png/xxxx.xxxxx/fig2.png)
+*Figure X: 中文说明*
 
 ---
 
 ## 📊 实验与结果
 
-### 1. 任务/数据集名称
+用自然语言描述关键发现，辅以具体数字。不要直接贴表格。
 
-简要说明实验设置，然后用自然语言描述结果。
-不要直接贴表格，而是用文字总结关键发现，辅以具体数字。
-
-![Figure X: 实验结果](图片URL或本地路径)
-*Figure X: 中文说明，分析训练曲线/结果图的关键趋势*
-
-关键发现：
-- 发现1 —— 具体数字和解释
-- 发现2 —— 具体数字和解释
-
-### 2. 下一个任务...
+![Figure X: 实验结果](../assets/png/xxxx.xxxxx/fig3.png)
+*Figure X: 中文说明*
 
 ---
 
 ## 🔍 消融实验
 
-用自然语言描述消融实验的结论，不要只列表格。
-重点说明哪个组件最重要、去掉什么影响最大。
-
 ---
 
 ## 💭 个人思考
 
-- **优点：** 这篇论文做得好的地方
-- **局限：** 方法的局限性和潜在问题
-- **启发：** 对后续研究的启发，可以推广到哪些场景
+- **优点：**
+- **局限：**
+- **启发：**
 
 ---
 
 ## 🔗 相关论文
 
-- 论文完整英文标题 — [arXiv](https://arxiv.org/abs/xxxx.xxxxx) | [[papers/论文文件名]]
-  一句话说明与本文的关系
-
-- 论文完整英文标题 — [arXiv](https://arxiv.org/abs/xxxx.xxxxx) | [[papers/论文文件名]]
-  一句话说明与本文的关系
+- 论文英文标题 — [arXiv](https://arxiv.org/abs/xxxx.xxxxx) | [[papers/论文文件名]]
+  与本文的关系
 ```
 
-## 图片处理规则
+## 图片路径规则
 
-1. **优先从 arxiv HTML 版本提取**：精确到每个 Figure/Table，而非整页截图
-2. 图片 URL 可以直接使用 arxiv 的 URL（如 `https://arxiv.org/html/xxxx.xxxxxv1/x1.png`），也可以下载到本地 `figures/` 目录后用 Obsidian 嵌入语法
-3. 使用 Markdown 标准图片语法：`![说明](URL或路径)`
-4. **每张图都必须有中文说明和详细解读**
-5. 架构图要逐模块解读
-6. 实验结果图要分析具体趋势，不能只说"如图所示"
+所有图片统一存放在 `assets/png/{arxiv_id}/` 下。
+笔记中引用图片使用相对路径：`../assets/png/{arxiv_id}/figX.png`
+（因为笔记在 `papers/` 目录下，需要 `../` 回到 vault 根目录）
 
-## 文件命名规则
+也可以使用 arxiv HTML 的在线 URL 作为图片源（无需下载）：
+`https://arxiv.org/html/{arxiv_id}v1/x1.png`
 
-- 笔记文件名：论文英文标题（下划线连接），如 `GDPO_Group_reward-Decoupled_Normalization_Policy_Optimization.md`
-- 标题行：同时包含英文原标题和中文翻译
-
-## 实验结果表达规则
-
-- **不要直接复制论文中的表格**，用自然语言描述关键发现
-- 辅以具体数字（如"GDPO 在 AIME 上比 GRPO 高 6.3%"）
-- 配合训练曲线图分析趋势
-- 像 blog 一样讲故事，而不是罗列数据
-
-## 相关论文格式
-
-每篇相关论文包含：
-- 论文完整英文标题
-- arXiv 链接
-- Obsidian 双链 `[[papers/文件名]]`（如果 vault 中还没有该论文的笔记，也要写上双链占位，方便后续创建时自动关联）
-- 一句话说明与本文的关系
+PDF 链接同理：`../assets/pdfs/{arxiv_id}.pdf`
 
 ## 不需要的内容
 
@@ -221,7 +185,7 @@ date_added: YYYY-MM-DD
 
 ## 质量要求
 
-- 核心方法部分是重点，要像写 blog 一样深入浅出，至少 500 字
-- 每个 section 都要有实质内容
-- 图片是笔记的核心组成部分，不能省略
+- 核心方法部分至少 500 字，像写 blog 一样深入浅出
+- 每张图都必须有中文说明和详细解读
+- 实验结果用自然语言描述，不要直接贴表格
 - 整篇笔记至少 2000 字
