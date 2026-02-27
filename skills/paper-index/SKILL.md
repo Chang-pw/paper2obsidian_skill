@@ -22,7 +22,9 @@ description: 扫描 Obsidian vault 中的论文笔记，生成和更新论文数
 
 ## 分类规则
 
-根据论文的 tags 判断分类。常见分类映射：
+根据论文的 tags 判断分类。tags 中不能有空格，多个单词用连字符 `-` 或下划线 `_` 连接（如 `Process_Reward`，不能写 `Process Reward`）。
+
+常见分类映射：
 
 - `reinforcement-learning`, `GRPO`, `PPO`, `RLHF` → **LLM-RL**（大模型强化学习）
 - `alignment`, `DPO`, `preference` → **LLM-Alignment**（大模型对齐）

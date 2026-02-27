@@ -123,6 +123,8 @@ tags: [tag1, tag2, tag3]
 date_added: YYYY-MM-DD
 ---
 
+**tags 命名规则：** tag 中不能有空格，多个单词用连字符 `-` 或下划线 `_` 连接。例如 `Process_Reward`、`math-reasoning`，不能写 `Process Reward`。
+
 # 论文完整英文标题
 # 论文中文翻译标题
 
