@@ -1,57 +1,217 @@
-# ArXiv Paper Skills for OpenCode / Claude Code / Cursor...
+# 📄 Paper Skills
 
-在 Obsidian 中用 AI 编程助手自动下载论文、提取关键图片、生成深度解读笔记，并维护论文数据库索引。
+[English](#english) | [中文](#中文)
 
-兼容 40+ AI coding agents（OpenCode, Claude Code, Cursor, Codex 等）。
+Agent skills for reading, indexing, and summarizing arXiv papers in Obsidian. Automatically downloads PDFs, extracts key figures, generates detailed Chinese notes, maintains a paper database, and creates interview-ready summary reports.
 
-## 一键安装
+Compatible with 40+ AI coding agents via the [Agent Skills](https://agentskills.io/) format.
+
+---
+
+<a id="english"></a>
+
+## Available Skills
+
+### read-arxiv-paper
+
+Download arXiv papers and generate in-depth reading notes in your Obsidian vault. Extracts key figures from arXiv HTML, writes structured Chinese notes with formulas and illustrations, and auto-updates the paper index.
+
+**Use when:**
+- "Read this paper https://arxiv.org/abs/2402.03300"
+- "Download and summarize 2503.14476"
+- "Read these three papers: 2402.03300, 2503.14476, 2503.20783"
+
+**Features:**
+- Downloads PDF to `assets/pdfs/`
+- Extracts key figures from arXiv HTML version (per-figure, not whole-page)
+- Generates structured notes with research motivation, core method, experiments
+- Customizable writing style (currently optimized for LLM researchers)
+- Auto-triggers `paper-index` skill after completion
+- Image width controlled with `|500` for Obsidian rendering
+- Cross-references via `[[arxiv_id]]` wikilinks
+
+### paper-index
+
+Scan paper notes and maintain a categorized paper database index.
+
+**Use when:**
+- "Update my paper index"
+- "Organize my papers"
+- "Generate paper list"
+
+**Features:**
+- Reads frontmatter from all notes in `papers/`
+- Maintains a master table with arXiv ID, title, author, year, category, tags
+- Auto-categorizes by tags (LLM-RL, Alignment, Architecture, etc.)
+- Per-category sub-tables with short name and core contribution
+- Deduplicates by arXiv ID
+
+### paper-summary
+
+Generate structured survey reports from multiple related papers. Designed as interview preparation material — every section is structured so you can "speak it out loud".
+
+**Use when:**
+- "Summarize 2402.03300, 2503.14476, 2503.20783"
+- "Summarize the LLM-RL category"
+- "Help me review the GRPO paper series"
+
+**Features:**
+- TLDR paragraph for quick interview prep
+- Overview table: problem solved, core method, limitations per paper
+- Evolution chain with mermaid diagram
+- Per-paper deep dive: problem → prior work gaps → method with formulas → limitations
+- Side-by-side method comparison table
+- Open questions and future directions
+
+## Installation
 
 ```bash
-# 安装所有 skills
-npx skills add your-github-username/paper-skill --all
+# Install all skills
+npx skills add your-username/paper-skill --all
 
-# 只安装特定 skill
-npx skills add your-github-username/paper-skill --skill read-arxiv-paper
-npx skills add your-github-username/paper-skill --skill paper-index
+# Install specific skill
+npx skills add your-username/paper-skill --skill read-arxiv-paper
 
-# 更新（重新安装最新版）
-npx skills remove read-arxiv-paper
-npx skills add your-github-username/paper-skill --skill read-arxiv-paper
+# Install to specific agent
+npx skills add your-username/paper-skill -a opencode --all
+npx skills add your-username/paper-skill -a claude-code --all
+
+# Update (re-install latest)
+npx skills remove read-arxiv-paper paper-index paper-summary
+npx skills add your-username/paper-skill --all
 ```
 
-## 包含的 Skills
-
-| Skill | 说明 |
-|-------|------|
-| `read-arxiv-paper` | 下载 PDF，从 arxiv HTML 提取关键 Figure，生成深度解读笔记，完成后自动调用 paper-index 更新索引 |
-| `paper-index` | 扫描论文笔记 frontmatter，按分类维护论文数据库索引表 |
-| `paper-summary` | 根据指定论文或分类，生成聚焦于研究问题和方法论的综述报告（可作为面试复习材料） |
-
-## 前置依赖
+## Prerequisites
 
 ```bash
 pip install pymupdf
 ```
 
-设置环境变量：
+Set your Obsidian vault path:
 ```bash
+export OBSIDIAN_VAULT="$HOME/path/to/your/vault"
+```
+
+## Vault Structure
+
+```
+your-vault/
+├── assets/
+│   ├── pdfs/                  # Paper PDFs
+│   │   └── 2402.03300.pdf
+│   └── png/                   # Figures (by arXiv ID, only referenced ones)
+│       └── 2402.03300/
+│           ├── fig1.png
+│           └── fig2.png
+├── papers/                    # Paper notes (named by arXiv ID)
+│   └── 2402.03300.md
+├── knowledge/
+│   └── Summary/               # Survey reports (named by category in Chinese)
+│       └── 大模型强化学习.md
+└── Paper_Index.md             # Paper database index
+```
+
+## Usage
+
+Once installed, just talk to your agent:
+
+```
+Read this paper: https://arxiv.org/abs/2402.03300
+```
+
+```
+Read these papers: 2402.03300, 2503.14476, 2503.20783
+```
+
+```
+Summarize the LLM-RL category
+```
+
+```
+Update my paper index
+```
+
+## Customization
+
+Fork this repo and edit the SKILL.md files to fit your needs:
+
+- `skills/read-arxiv-paper/SKILL.md` — Note template, writing style preferences, section priorities
+- `skills/paper-index/SKILL.md` — Category mapping rules, index table format
+- `skills/paper-summary/SKILL.md` — Survey report structure, detail level per section
+
+## Skill Structure
+
+```
+paper-skill/
+├── skills/
+│   ├── read-arxiv-paper/
+│   │   └── SKILL.md          # Paper reading & note generation
+│   ├── paper-index/
+│   │   └── SKILL.md          # Database index maintenance
+│   └── paper-summary/
+│       └── SKILL.md          # Survey report generation
+├── scripts/                   # Standalone shell scripts (optional)
+└── README.md
+```
+
+## License
+
+MIT
+
+---
+
+<a id="中文"></a>
+
+## 中文说明
+
+### 这是什么？
+
+一套用于在 Obsidian 中阅读、索引和总结 arXiv 论文的 Agent Skills。自动下载 PDF、提取关键图片、生成详细的中文论文解读笔记、维护论文数据库、生成面试复习用的综述报告。
+
+兼容 40+ AI 编程助手（OpenCode、Claude Code、Cursor、Codex 等），基于 [Agent Skills](https://agentskills.io/) 开放标准。
+
+### 包含的 Skills
+
+| Skill | 说明 |
+|-------|------|
+| `read-arxiv-paper` | 下载论文 PDF，从 arXiv HTML 提取关键 Figure，生成深度解读笔记，自动更新索引 |
+| `paper-index` | 扫描论文笔记，按分类维护论文数据库索引表 |
+| `paper-summary` | 根据指定论文或分类，生成面试复习用的综述报告（含公式对比、演化脉络、方法对比表） |
+
+### 安装
+
+```bash
+# 安装所有 skills
+npx skills add your-username/paper-skill --all
+
+# 只安装特定 skill
+npx skills add your-username/paper-skill --skill read-arxiv-paper
+
+# 安装到指定 agent
+npx skills add your-username/paper-skill -a opencode --all
+
+# 更新（重新安装最新版）
+npx skills remove read-arxiv-paper paper-index paper-summary
+npx skills add your-username/paper-skill --all
+```
+
+### 前置依赖
+
+```bash
+pip install pymupdf
 export OBSIDIAN_VAULT="$HOME/你的Vault路径"
 ```
 
-## 使用方式
+### 使用方式
 
-安装后直接对话，agent 会自动加载 skill：
+安装后直接和 agent 对话：
 
 ```
-帮我下载并解读这篇论文 https://arxiv.org/abs/2601.05242
+帮我读这篇论文 https://arxiv.org/abs/2402.03300
 ```
 
 ```
 帮我读这三篇论文：2402.03300, 2503.14476, 2503.20783
-```
-
-```
-帮我总结 2402.03300, 2503.14476, 2503.20783 这几篇的关系
 ```
 
 ```
@@ -62,49 +222,35 @@ export OBSIDIAN_VAULT="$HOME/你的Vault路径"
 更新一下我的论文索引
 ```
 
-## 工作流程
-
-```
-arxiv URL/ID
-    │
-    ├── Step 1: 下载 PDF → assets/pdfs/{id}.pdf
-    ├── Step 2: 读取论文全文（必须读完才动笔）
-    ├── Step 3: 生成解读笔记 → papers/{id}.md
-    ├── Step 4: 按需下载引用的 Figure → assets/png/{id}/
-    └── Step 5: 自动调用 paper-index 更新索引 → Paper_Index.md
-```
-
-## Vault 目录结构
+### Vault 目录结构
 
 ```
 your-vault/
 ├── assets/
-│   ├── pdfs/              # 论文 PDF
-│   │   └── 2601.05242.pdf
-│   └── png/               # 论文图片（按 arxiv ID 分目录，只存引用的图）
-│       └── 2601.05242/
-│           ├── fig1.png
-│           └── fig2.png
-├── papers/                # 论文笔记（以 arxiv ID 命名）
-│   └── 2601.05242.md
+│   ├── pdfs/                  # 论文 PDF
+│   └── png/                   # 论文图片（按 arXiv ID 分目录，只存引用的图）
+├── papers/                    # 论文笔记（以 arXiv ID 命名）
 ├── knowledge/
-│   └── Summary/           # 综述报告（按分类中文名命名）
-│       └── 大模型强化学习.md
-└── Paper_Index.md         # 论文数据库索引
+│   └── Summary/               # 综述报告（以分类中文名命名）
+└── Paper_Index.md             # 论文数据库索引
 ```
 
-## 笔记特点
+### 笔记特点
 
-- 中文解读，保留英文原标题
-- 侧重研究动机和核心方法，实验结果简要总结
-- 图片从 arxiv HTML 精确提取，`|500` 控制宽度
+- 中文撰写，保留英文原标题
+- 侧重研究动机和核心方法（适合大模型研究者），实验结果简要总结
+- 图片从 arXiv HTML 精确提取关键 Figure，不全量下载
 - 相关论文用 `[[arxiv_id]]` wikilink 互相链接
-- 索引按分类自动分表（LLM-RL、Alignment、Architecture 等）
+- 索引按分类自动分表
 
-## 自定义
+### 自定义
 
-Fork 后可以修改 `skills/read-arxiv-paper/SKILL.md` 中的：
+Fork 后修改 `skills/` 下的 SKILL.md 文件：
 
-- **写作风格偏好** — 调整各 section 的详略程度
-- **分类规则** — 在 `skills/paper-index/SKILL.md` 中自定义 tag → 分类映射
-- **笔记模板** — 增删 section、调整格式
+- **写作风格** — 在 `read-arxiv-paper/SKILL.md` 的"写作风格偏好"section 调整各部分详略
+- **分类规则** — 在 `paper-index/SKILL.md` 中自定义 tag → 分类映射
+- **综述结构** — 在 `paper-summary/SKILL.md` 中调整报告模板和详细程度
+
+### License
+
+MIT
