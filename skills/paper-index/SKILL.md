@@ -30,7 +30,8 @@ description: 扫描 Obsidian vault 中的论文笔记，生成和更新论文数
 - `reasoning`, `chain-of-thought`, `math` → **Reasoning**（推理）
 - `data`, `pretraining`, `scaling` → **Pretraining**（预训练）
 
-如果一篇论文的 tags 跨多个分类，放入最相关的那个分类。分类名写在总表的"分类"列中。
+如果一篇论文的 tags 跨多个分类，必须在每个相关分类的子表中都出现。例如一篇关于 PRM + RL 的论文，既要出现在 LLM-RL 子表，也要出现在 PRM 子表。
+总表中"分类"列用逗号分隔列出所有分类，如 `LLM-RL, PRM`。
 遇到无法归类的新领域时，自行创建合理的分类名。
 
 ## 索引格式
