@@ -1,70 +1,161 @@
 ---
 name: paper-index
-description: 扫描 Obsidian vault 中的论文笔记，生成和更新论文数据库索引（按分类自动分表）
+description: 使用 Obsidian Bases 维护论文数据库，自动生成和更新 .base 文件实现动态分类视图
 ---
 
 # Paper Index
 
-维护论文库的索引数据库。
+使用 Obsidian Bases（.base 文件）维护论文数据库索引。Bases 是 Obsidian 1.9+ 的原生功能，能从笔记 frontmatter 自动生成数据库视图，无需手动维护表格。
 
 ## 触发条件
 
 当用户要求"更新索引"、"整理论文"、"生成论文列表"时加载此 skill。
 也会在 read-arxiv-paper skill 完成后自动执行。
 
-## 工作流程
+## 前置要求
 
-1. 扫描 `$OBSIDIAN_VAULT/papers/` 目录下所有 `.md` 文件
-2. 读取每篇笔记的 YAML frontmatter（title, authors, year, arxiv, tags）
-3. 读取现有的 `$OBSIDIAN_VAULT/Paper_Index.md`（如果存在）
-4. 将新论文追加到总表和对应分类子表中，不要覆盖已有条目
-5. 如果论文的分类在现有索引中不存在，新建一个分类 section
+- Obsidian 1.9+ （内置 Bases 功能）
+- 论文笔记的 frontmatter 必须包含以下字段：title, title_zh, authors, year, arxiv, pdf, tags, tldr, date_added
 
-## 分类规则
+## 目录结构
 
-根据论文的 tags 判断分类。tags 中不能有空格，多个单词用连字符 `-` 或下划线 `_` 连接（如 `Process_Reward`，不能写 `Process Reward`）。
-
-常见分类映射：
-
-- `reinforcement-learning`, `GRPO`, `PPO`, `RLHF` → **LLM-RL**（大模型强化学习）
-- `alignment`, `DPO`, `preference` → **LLM-Alignment**（大模型对齐）
-- `attention`, `transformer`, `architecture` → **Architecture**（模型架构）
-- `reasoning`, `chain-of-thought`, `math` → **Reasoning**（推理）
-- `data`, `pretraining`, `scaling` → **Pretraining**（预训练）
-
-如果一篇论文的 tags 跨多个分类，必须在每个相关分类的子表中都出现。例如一篇关于 PRM + RL 的论文，既要出现在 LLM-RL 子表，也要出现在 PRM 子表。
-总表中"分类"列用逗号分隔列出所有分类，如 `LLM-RL, PRM`。
-遇到无法归类的新领域时，自行创建合理的分类名。
-
-## 索引格式
-
-```markdown
-# 📚 论文数据库
-
-> 最后更新：YYYY-MM-DD
-
----
-
-## 全部论文
-
-| arXiv | 标题 | 一作 | 年份 | 分类 | 标签 |
-|-------|------|------|------|------|------|
-| [[xxxx.xxxxx]] | 论文标题 | 一作 | 年份 | 分类名 | tag1, tag2 |
-
----
-
-## 按分类
-
-### 分类名（中文说明）
-
-| arXiv | 简称 | 核心贡献 | 年份 |
-|-------|------|----------|------|
-| [[xxxx.xxxxx]] | 简称 | 一句话贡献 | 年份 |
+```
+vault/
+├── papers/
+│   ├── index/                   # .base 文件存放目录
+│   │   ├── 全部论文.base         # 总库
+│   │   ├── 强化学习.base         # 分类库
+│   │   ├── 数学推理.base         # 分类库
+│   │   └── ...
+│   ├── 2402.03300.md
+│   └── ...
 ```
 
-## 更新规则
+## 工作流程
 
-- 新论文追加到总表末尾，同时追加到对应分类子表
-- 已存在的条目（按 arxiv ID 判断）不要重复添加
-- 保留用户手动添加的备注和自定义 section
-- 更新"最后更新"日期
+### Step 1: 扫描论文笔记
+
+读取 `$OBSIDIAN_VAULT/papers/` 下所有 `.md` 文件的 frontmatter，提取 tags 字段。
+
+### Step 2: 确定分类
+
+收集所有论文的 tags，按以下规则映射为分类（中文名）：
+
+- `reinforcement-learning`, `GRPO`, `PPO`, `RLHF`, `DAPO`, `Dr-GRPO` → **强化学习**
+- `alignment`, `DPO`, `preference` → **对齐**
+- `attention`, `transformer`, `architecture` → **模型架构**
+- `math-reasoning`, `reasoning`, `chain-of-thought` → **数学推理**
+- `data`, `pretraining`, `scaling` → **预训练**
+- `distillation`, `knowledge-distillation` → **蒸馏**
+- `video`, `video-generation`, `video-distillation` → **视频生成**
+
+一篇论文可以属于多个分类（只要 tags 匹配多个分类规则）。
+遇到无法归类的新 tag 时，自行创建合理的中文分类名。
+
+tags 中不能有空格，多个单词用连字符 `-` 或下划线 `_` 连接。
+
+### Step 3: 检查已有 .base 文件
+
+检查 `$OBSIDIAN_VAULT/papers/index/` 目录下已有的 .base 文件。
+
+### Step 4: 生成/更新 .base 文件
+
+**总库（全部论文.base）：** 如果不存在则创建，已存在则不覆盖。
+
+```yaml
+filters:
+  and:
+    - file.inFolder("papers")
+    - 'file.ext == "md"'
+
+properties:
+  title_zh:
+    displayName: "中文名"
+  arxiv:
+    displayName: "arXiv"
+  pdf:
+    displayName: "PDF"
+  tags:
+    displayName: "标签"
+  tldr:
+    displayName: "TLDR"
+  authors:
+    displayName: "作者"
+  year:
+    displayName: "年份"
+
+formulas:
+  first_author: 'if(authors, authors[0], "")'
+
+views:
+  - type: table
+    name: "全部论文"
+    order:
+      - file.name
+      - title_zh
+      - arxiv
+      - pdf
+      - tags
+      - tldr
+      - formula.first_author
+      - year
+    groupBy:
+      property: year
+      direction: DESC
+```
+
+**分类库（{分类中文名}.base）：** 对每个分类，如果对应的 .base 文件不存在则创建。filter 条件使用 `tags.contains("tag-name")` 匹配。如果一个分类对应多个 tag，用 `or` 组合：
+
+```yaml
+filters:
+  and:
+    - file.inFolder("papers")
+    - 'file.ext == "md"'
+    - or:
+        - 'tags.contains("reinforcement-learning")'
+        - 'tags.contains("GRPO")'
+        - 'tags.contains("PPO")'
+
+properties:
+  title_zh:
+    displayName: "中文名"
+  arxiv:
+    displayName: "arXiv"
+  pdf:
+    displayName: "PDF"
+  tags:
+    displayName: "标签"
+  tldr:
+    displayName: "TLDR"
+  authors:
+    displayName: "作者"
+  year:
+    displayName: "年份"
+
+formulas:
+  first_author: 'if(authors, authors[0], "")'
+
+views:
+  - type: table
+    name: "分类中文名"
+    order:
+      - file.name
+      - title_zh
+      - arxiv
+      - pdf
+      - tags
+      - tldr
+      - formula.first_author
+      - year
+    groupBy:
+      property: year
+      direction: DESC
+```
+
+## 重要规则
+
+- .base 文件使用 YAML 格式，不是 Markdown
+- 已存在的 .base 文件不要覆盖（用户可能手动调整过视图配置）
+- 只创建新分类对应的 .base 文件
+- 分类名使用中文，如"强化学习"、"数学推理"
+- filter 中的 tag 必须与论文 frontmatter 中的 tags 完全匹配（区分大小写）

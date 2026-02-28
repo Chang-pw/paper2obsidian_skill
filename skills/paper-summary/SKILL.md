@@ -24,8 +24,8 @@ description: 根据指定论文或分类，生成聚焦于研究问题和方法�
 ### Step 1: 收集论文信息
 
 - 如果用户指定了 arxiv ID，直接读取 `$OBSIDIAN_VAULT/papers/{id}.md` 笔记
-- 如果用户指定了分类，先读取 `$OBSIDIAN_VAULT/Paper_Index.md`，找到"按分类"section 下对应分类的子表，从子表中提取所有 `[[arxiv_id]]`，再逐篇读取笔记
-- **重要：从分类子表的 arXiv 列中提取所有论文 ID，不要用 grep 搜索关键词，不要只看总表。分类子表才是该分类下论文的完整列表。**
+- 如果用户指定了分类，先查看 `$OBSIDIAN_VAULT/papers/index/` 下对应分类的 `.base` 文件，从其 filter 条件中提取匹配的 tags，然后扫描 `$OBSIDIAN_VAULT/papers/` 下所有笔记，找出 tags 匹配的论文，再逐篇读取笔记
+- **重要：从分类对应的 .base 文件的 filter 条件中确定该分类包含哪些 tags，然后扫描所有论文笔记的 frontmatter 找匹配的。不要用 grep 搜索关键词。**
 - 必须完整读取每篇笔记的全部内容，不能只读 frontmatter
 
 ### Step 2: 分析论文关系

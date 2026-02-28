@@ -32,8 +32,13 @@ vault/
 │           ├── fig2.png
 │           └── ...
 ├── papers/                      # 论文笔记（以 arxiv ID 命名）
+│   ├── index/                   # Obsidian Bases 索引
+│   │   ├── 全部论文.base
+│   │   ├── 强化学习.base
+│   │   └── ...
 │   └── 2601.05242.md
-└── Paper_Index.md               # 索引（可选）
+└── knowledge/
+    └── Summary/                 # 综述报告
 ```
 
 ## 工作流程
@@ -93,11 +98,11 @@ curl -sL "https://arxiv.org/html/${ARXIV_ID}v1/x3.png" -o "$FIG_DIR/fig3.png"
 
 ### Step 5: 更新论文索引
 
-所有论文笔记写完后，执行 `paper-index` skill 更新 `$OBSIDIAN_VAULT/Paper_Index.md`。
+所有论文笔记写完后，执行 `paper-index` skill 更新 `$OBSIDIAN_VAULT/papers/index/` 下的 .base 文件。
 
 传入信息：
 - 新增论文的 arxiv ID 列表
-- 每篇论文的 title、一作、年份、分类、标签、简称、一句话核心贡献（从刚写完的笔记 frontmatter 和内容中提取）
+- 每篇论文的 tags（用于判断需要创建哪些分类 .base 文件）
 
 注意：如果一次读了多篇论文，等全部笔记写完后再统一执行一次 index 更新，不要每篇都更新一次。
 
@@ -116,10 +121,13 @@ curl -sL "https://arxiv.org/html/${ARXIV_ID}v1/x3.png" -o "$FIG_DIR/fig3.png"
 ```markdown
 ---
 title: "论文完整英文标题"
+title_zh: "论文中文翻译标题"
 authors: [作者1, 作者2, 作者3]
 year: 2025
 arxiv: "xxxx.xxxxx"
+pdf: "[[assets/pdfs/xxxx.xxxxx.pdf]]"
 tags: [tag1, tag2, tag3]
+tldr: "一句话概括核心贡献"
 date_added: YYYY-MM-DD
 ---
 

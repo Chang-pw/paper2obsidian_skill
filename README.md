@@ -32,7 +32,7 @@ Download arXiv papers and generate in-depth reading notes in your Obsidian vault
 
 ### paper-index
 
-Scan paper notes and maintain a categorized paper database index.
+Scan paper notes and maintain categorized paper database using Obsidian Bases (.base files).
 
 **Use when:**
 - "Update my paper index"
@@ -41,10 +41,11 @@ Scan paper notes and maintain a categorized paper database index.
 
 **Features:**
 - Reads frontmatter from all notes in `papers/`
-- Maintains a master table with arXiv ID, title, author, year, category, tags
-- Auto-categorizes by tags (LLM-RL, Alignment, Architecture, etc.)
-- Per-category sub-tables with short name and core contribution
-- Deduplicates by arXiv ID
+- Auto-generates `.base` files in `papers/index/`
+- One master base (全部论文.base) for all papers
+- Per-category bases with tag-based filters (e.g. 强化学习.base)
+- Papers can appear in multiple category bases
+- Requires Obsidian 1.9+ (Bases is a core plugin)
 
 ### paper-summary
 
@@ -104,11 +105,14 @@ your-vault/
 │           ├── fig1.png
 │           └── fig2.png
 ├── papers/                    # Paper notes (named by arXiv ID)
+│   ├── index/                 # Obsidian Bases index (.base files)
+│   │   ├── 全部论文.base       # All papers
+│   │   ├── 强化学习.base       # Category: RL
+│   │   └── ...
 │   └── 2402.03300.md
 ├── knowledge/
 │   └── Summary/               # Survey reports (named by category in Chinese)
 │       └── 大模型强化学习.md
-└── Paper_Index.md             # Paper database index
 ```
 
 ## Usage
@@ -175,7 +179,7 @@ MIT
 | Skill | 说明 |
 |-------|------|
 | `read-arxiv-paper` | 下载论文 PDF，从 arXiv HTML 提取关键 Figure，生成深度解读笔记，自动更新索引 |
-| `paper-index` | 扫描论文笔记，按分类维护论文数据库索引表 |
+| `paper-index` | 使用 Obsidian Bases 维护论文数据库，自动生成分类 .base 文件（需要 Obsidian 1.9+） |
 | `paper-summary` | 根据指定论文或分类，生成面试复习用的综述报告（含公式对比、演化脉络、方法对比表） |
 
 ### 安装
@@ -248,7 +252,7 @@ your-vault/
 Fork 后修改 `skills/` 下的 SKILL.md 文件：
 
 - **写作风格** — 在 `read-arxiv-paper/SKILL.md` 的"写作风格偏好"section 调整各部分详略
-- **分类规则** — 在 `paper-index/SKILL.md` 中自定义 tag → 分类映射
+- **分类规则** — 在 `paper-index/SKILL.md` 中自定义 tag → 分类映射和 .base 文件模板
 - **综述结构** — 在 `paper-summary/SKILL.md` 中调整报告模板和详细程度
 
 ### License
