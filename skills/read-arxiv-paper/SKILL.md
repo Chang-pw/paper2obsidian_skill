@@ -214,6 +214,13 @@ date_added: YYYY-MM-DD
 
 PDF 链接同理：`../../assets/pdfs/{arxiv_id}.pdf`
 
+## 公式书写规范
+
+- 行内公式用单美元符号：`$E = mc^2$`
+- 行间公式用双美元符号（独占一行）：`$$\nabla_\theta J(\theta) = \mathbb{E}[...]$$`
+- 禁止用反引号 `` ` `` 包裹公式，反引号是代码格式，Obsidian 不会渲染 LaTeX
+- 公式中的每个符号都要在前后文中解释含义
+
 ## 不需要的内容
 
 - 不需要"关键引用"section
