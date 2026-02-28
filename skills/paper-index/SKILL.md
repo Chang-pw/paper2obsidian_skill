@@ -23,9 +23,9 @@ description: 使用 Obsidian Bases 维护论文数据库，自动生成和更新
 vault/
 ├── papers/
 │   ├── index/                   # .base 文件存放目录
-│   │   ├── 全部论文.base         # 总库
-│   │   ├── 强化学习.base         # 分类库
-│   │   ├── 数学推理.base         # 分类库
+│   │   ├── All-Papers.base      # 总库
+│   │   ├── Reinforcement-Learning.base  # 分类库
+│   │   ├── Reasoning.base       # 分类库
 │   │   └── ...
 │   ├── 2402.03300.md
 │   └── ...
@@ -41,16 +41,16 @@ vault/
 
 收集所有论文的 tags，按以下规则映射为分类（中文名）：
 
-- `reinforcement-learning`, `GRPO`, `PPO`, `RLHF`, `DAPO`, `Dr-GRPO` → **强化学习**
-- `alignment`, `DPO`, `preference` → **对齐**
-- `attention`, `transformer`, `architecture` → **模型架构**
-- `math-reasoning`, `reasoning`, `chain-of-thought` → **数学推理**
-- `data`, `pretraining`, `scaling` → **预训练**
-- `distillation`, `knowledge-distillation` → **蒸馏**
-- `video`, `video-generation`, `video-distillation` → **视频生成**
+- `reinforcement-learning`, `GRPO`, `PPO`, `RLHF`, `DAPO`, `Dr-GRPO` → **Reinforcement-Learning**
+- `alignment`, `DPO`, `preference` → **Alignment**
+- `attention`, `transformer`, `architecture` → **Architecture**
+- `math-reasoning`, `reasoning`, `chain-of-thought` → **Reasoning**
+- `data`, `pretraining`, `scaling` → **Pretraining**
+- `distillation`, `knowledge-distillation` → **Distillation**
+- `video`, `video-generation`, `video-distillation` → **Video-Generation**
 
 一篇论文可以属于多个分类（只要 tags 匹配多个分类规则）。
-遇到无法归类的新 tag 时，自行创建合理的中文分类名。
+遇到无法归类的新 tag 时，自行创建合理的英文分类名。
 
 tags 中不能有空格，多个单词用连字符 `-` 或下划线 `_` 连接。
 
@@ -60,7 +60,7 @@ tags 中不能有空格，多个单词用连字符 `-` 或下划线 `_` 连接�
 
 ### Step 4: 生成/更新 .base 文件
 
-**总库（全部论文.base）：** 如果不存在则创建，已存在则不覆盖。
+**总库（All-Papers.base）：** 如果不存在则创建，已存在则不覆盖。
 
 ```yaml
 filters:
@@ -69,42 +69,30 @@ filters:
     - 'file.ext == "md"'
 
 properties:
+  title:
+    displayName: "Title"
   title_zh:
     displayName: "中文名"
-  arxiv:
-    displayName: "arXiv"
-  pdf:
-    displayName: "PDF"
-  tags:
-    displayName: "标签"
   tldr:
     displayName: "TLDR"
-  authors:
-    displayName: "作者"
-  year:
-    displayName: "年份"
-
-formulas:
-  first_author: 'if(authors, authors[0], "")'
+  tags:
+    displayName: "标签"
 
 views:
   - type: table
-    name: "全部论文"
+    name: "All Papers"
     order:
       - file.name
       - title_zh
-      - arxiv
-      - pdf
-      - tags
+      - title
       - tldr
-      - formula.first_author
-      - year
+      - tags
     groupBy:
       property: year
       direction: DESC
 ```
 
-**分类库（{分类中文名}.base）：** 对每个分类，如果对应的 .base 文件不存在则创建。filter 条件使用 `tags.contains("tag-name")` 匹配。如果一个分类对应多个 tag，用 `or` 组合：
+**分类库（{Category-Name}.base）：** 对每个分类，如果对应的 .base 文件不存在则创建。filter 条件使用 `tags.contains("tag-name")` 匹配。如果一个分类对应多个 tag，用 `or` 组合：
 
 ```yaml
 filters:
@@ -117,36 +105,24 @@ filters:
         - 'tags.contains("PPO")'
 
 properties:
+  title:
+    displayName: "Title"
   title_zh:
     displayName: "中文名"
-  arxiv:
-    displayName: "arXiv"
-  pdf:
-    displayName: "PDF"
-  tags:
-    displayName: "标签"
   tldr:
     displayName: "TLDR"
-  authors:
-    displayName: "作者"
-  year:
-    displayName: "年份"
-
-formulas:
-  first_author: 'if(authors, authors[0], "")'
+  tags:
+    displayName: "标签"
 
 views:
   - type: table
-    name: "分类中文名"
+    name: "Category-Name"
     order:
       - file.name
       - title_zh
-      - arxiv
-      - pdf
-      - tags
+      - title
       - tldr
-      - formula.first_author
-      - year
+      - tags
     groupBy:
       property: year
       direction: DESC
@@ -157,5 +133,5 @@ views:
 - .base 文件使用 YAML 格式，不是 Markdown
 - 已存在的 .base 文件不要覆盖（用户可能手动调整过视图配置）
 - 只创建新分类对应的 .base 文件
-- 分类名使用中文，如"强化学习"、"数学推理"
+- 分类名使用英文，如 "Reinforcement-Learning"、"Reasoning"
 - filter 中的 tag 必须与论文 frontmatter 中的 tags 完全匹配（区分大小写）
