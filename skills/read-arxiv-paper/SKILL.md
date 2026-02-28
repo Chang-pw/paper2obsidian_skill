@@ -81,21 +81,29 @@ curl -sL "https://arxiv.org/pdf/$ARXIV_ID.pdf" \
 
 **文件命名规则：** 使用 arxiv ID 作为文件名，如 `2601.05242.md`。这样保证唯一性，且 Obsidian wikilink 可以直接用 `[[2601.05242]]` 链接。
 
-### Step 4: 按需下载笔记中引用的图片
+### Step 4: 图片引用（优先在线链接）
 
-笔记写完后，只下载笔记中实际 `![...]()` 引用到的图片，不要把论文所有图都下载。
+笔记中的图片**优先使用 arXiv HTML 在线链接**，不下载到本地：
 
-优先从 arxiv HTML 版本下载（精确到每个 Figure）：
+```markdown
+![Figure 1: 方法概览|600](https://arxiv.org/html/2601.05242v1/x1.png)
+```
+
+URL 规则：`https://arxiv.org/html/{ARXIV_ID}v1/x{N}.png`，其中 `x{N}` 对应论文中第 N 张图片（从 x1 开始）。
+
+**只有在以下情况才下载到本地：**
+- arXiv HTML 版本不存在（部分老论文没有）
+- 在线图片 URL 返回 404
+
+回退下载方式：
 
 ```bash
 FIG_DIR="$OBSIDIAN_VAULT/assets/png/$ARXIV_ID"
 mkdir -p "$FIG_DIR"
-# 只下载笔记中引用的图，例如笔记引用了 fig1 和 fig3：
 curl -sL "https://arxiv.org/html/${ARXIV_ID}v1/x1.png" -o "$FIG_DIR/fig1.png"
-curl -sL "https://arxiv.org/html/${ARXIV_ID}v1/x3.png" -o "$FIG_DIR/fig3.png"
 ```
 
-如果 HTML 版本不可用，回退到 pymupdf 从 PDF 提取对应页面的图片。
+如果 HTML 版本完全不可用，回退到 pymupdf 从 PDF 提取对应页面的图片。
 
 ### Step 5: 更新论文索引
 
@@ -151,7 +159,7 @@ date_added: YYYY-MM-DD
 
 用 3-5 段话详细说明背景、问题、现有方法的不足。
 
-![Figure X: 说明|600](../../assets/png/xxxx.xxxxx/fig1.png)
+![Figure X: 说明|600](https://arxiv.org/html/xxxx.xxxxxv1/x1.png)
 *Figure X: 中文说明*
 
 ---
@@ -160,7 +168,7 @@ date_added: YYYY-MM-DD
 
 像写技术博客一样分步骤讲解。可以用公式，但每个公式都要有直觉解释。
 
-![Figure X: 方法概览|600](../../assets/png/xxxx.xxxxx/fig2.png)
+![Figure X: 方法概览|600](https://arxiv.org/html/xxxx.xxxxxv1/x2.png)
 *Figure X: 中文说明*
 
 ---
@@ -169,7 +177,7 @@ date_added: YYYY-MM-DD
 
 用自然语言描述关键发现，辅以具体数字。不要直接贴表格。
 
-![Figure X: 实验结果|600](../../assets/png/xxxx.xxxxx/fig3.png)
+![Figure X: 实验结果|600](https://arxiv.org/html/xxxx.xxxxxv1/x3.png)
 *Figure X: 中文说明*
 
 ---
@@ -205,14 +213,14 @@ date_added: YYYY-MM-DD
 
 ## 图片路径规则
 
-所有图片统一存放在 `assets/png/{arxiv_id}/` 下。
-笔记中引用图片使用相对路径，并加 `|600` 控制宽度：`![Figure X: 说明|600](../../assets/png/{arxiv_id}/figX.png)`
-（因为笔记在 `papers/notes/` 目录下，需要 `../../` 回到 vault 根目录）
+笔记中的图片**优先使用 arXiv HTML 在线链接**：
+`![Figure X: 说明|600](https://arxiv.org/html/{arxiv_id}v1/xN.png)`
 
-也可以使用 arxiv HTML 的在线 URL 作为图片源（无需下载）：
-`![Figure X: 说明|600](https://arxiv.org/html/{arxiv_id}v1/x1.png)`
+只有在线链接不可用时，才下载到本地 `assets/png/{arxiv_id}/`，使用相对路径：
+`![Figure X: 说明|600](../../assets/png/{arxiv_id}/figX.png)`
+（笔记在 `papers/notes/` 目录下，需要 `../../` 回到 vault 根目录）
 
-PDF 链接同理：`../../assets/pdfs/{arxiv_id}.pdf`
+PDF 链接：`../../assets/pdfs/{arxiv_id}.pdf`
 
 ## 公式书写规范
 
