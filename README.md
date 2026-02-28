@@ -40,10 +40,10 @@ Scan paper notes and maintain categorized paper database using Obsidian Bases (.
 - "Generate paper list"
 
 **Features:**
-- Reads frontmatter from all notes in `papers/`
+- Reads frontmatter from all notes in `papers/notes/`
 - Auto-generates `.base` files in `papers/index/`
-- One master base (全部论文.base) for all papers
-- Per-category bases with tag-based filters (e.g. 强化学习.base)
+- One master base (All-Papers.base) for all papers
+- Per-category bases with tag-based filters (e.g. Reinforcement-Learning.base)
 - Papers can appear in multiple category bases
 - Requires Obsidian 1.9+ (Bases is a core plugin)
 
@@ -104,12 +104,13 @@ your-vault/
 │       └── 2402.03300/
 │           ├── fig1.png
 │           └── fig2.png
-├── papers/                    # Paper notes (named by arXiv ID)
+├── papers/
 │   ├── index/                 # Obsidian Bases index (.base files)
-│   │   ├── 全部论文.base       # All papers
-│   │   ├── 强化学习.base       # Category: RL
+│   │   ├── All-Papers.base    # All papers
+│   │   ├── Reinforcement-Learning.base  # Category
 │   │   └── ...
-│   └── 2402.03300.md
+│   └── notes/                 # Paper notes (named by arXiv ID)
+│       └── 2402.03300.md
 ├── knowledge/
 │   └── Summary/               # Survey reports (named by category in Chinese)
 │       └── 大模型强化学习.md
@@ -233,10 +234,15 @@ your-vault/
 ├── assets/
 │   ├── pdfs/                  # 论文 PDF
 │   └── png/                   # 论文图片（按 arXiv ID 分目录，只存引用的图）
-├── papers/                    # 论文笔记（以 arXiv ID 命名）
+├── papers/
+│   ├── index/                 # Obsidian Bases 索引（.base 文件）
+│   │   ├── All-Papers.base
+│   │   ├── Reinforcement-Learning.base
+│   │   └── ...
+│   └── notes/                 # 论文笔记（以 arXiv ID 命名）
+│       └── 2402.03300.md
 ├── knowledge/
 │   └── Summary/               # 综述报告（以分类中文名命名）
-└── Paper_Index.md             # 论文数据库索引
 ```
 
 ### 笔记特点

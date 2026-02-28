@@ -27,15 +27,16 @@ vault/
 │   │   ├── Reinforcement-Learning.base  # 分类库
 │   │   ├── Reasoning.base       # 分类库
 │   │   └── ...
-│   ├── 2402.03300.md
-│   └── ...
+│   └── notes/                   # 论文笔记
+│       ├── 2402.03300.md
+│       └── ...
 ```
 
 ## 工作流程
 
 ### Step 1: 扫描论文笔记
 
-读取 `$OBSIDIAN_VAULT/papers/` 下所有 `.md` 文件的 frontmatter，提取 tags 字段。
+读取 `$OBSIDIAN_VAULT/papers/notes/` 下所有 `.md` 文件的 frontmatter，提取 tags 字段。
 
 ### Step 2: 确定分类
 
@@ -65,7 +66,7 @@ tags 中不能有空格，多个单词用连字符 `-` 或下划线 `_` 连接�
 ```yaml
 filters:
   and:
-    - file.inFolder("papers")
+    - file.inFolder("papers/notes")
     - 'file.ext == "md"'
 
 properties:
@@ -97,7 +98,7 @@ views:
 ```yaml
 filters:
   and:
-    - file.inFolder("papers")
+    - file.inFolder("papers/notes")
     - 'file.ext == "md"'
     - or:
         - 'tags.contains("reinforcement-learning")'

@@ -23,8 +23,8 @@ description: 根据指定论文或分类，生成聚焦于研究问题和方法�
 
 ### Step 1: 收集论文信息
 
-- 如果用户指定了 arxiv ID，直接读取 `$OBSIDIAN_VAULT/papers/{id}.md` 笔记
-- 如果用户指定了分类，先查看 `$OBSIDIAN_VAULT/papers/index/` 下对应分类的 `.base` 文件，从其 filter 条件中提取匹配的 tags，然后扫描 `$OBSIDIAN_VAULT/papers/` 下所有笔记，找出 tags 匹配的论文，再逐篇读取笔记
+- 如果用户指定了 arxiv ID，直接读取 `$OBSIDIAN_VAULT/papers/notes/{id}.md` 笔记
+- 如果用户指定了分类，先查看 `$OBSIDIAN_VAULT/papers/index/` 下对应分类的 `.base` 文件，从其 filter 条件中提取匹配的 tags，然后扫描 `$OBSIDIAN_VAULT/papers/notes/` 下所有笔记，找出 tags 匹配的论文，再逐篇读取笔记
 - **重要：从分类对应的 .base 文件的 filter 条件中确定该分类包含哪些 tags，然后扫描所有论文笔记的 frontmatter 找匹配的。不要用 grep 搜索关键词。**
 - 必须完整读取每篇笔记的全部内容，不能只读 frontmatter
 
@@ -98,7 +98,7 @@ graph TD
 **关键设计/公式：** 列出最核心的 1-2 个公式或设计点，附直觉解释
 **缺陷/后续被改进的点：** 这篇论文自身的局限，后来被谁改进了
 
-（引用笔记中的关键 Figure，使用相对路径：`![说明|500](../assets/png/{arxiv_id}/figX.png)`）
+（引用笔记中的关键 Figure，使用相对路径：`![说明|500](../../assets/png/{arxiv_id}/figX.png)`）
 
 ### 2. 简称（arxiv_id）
 ...

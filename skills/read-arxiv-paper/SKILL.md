@@ -31,12 +31,13 @@ vault/
 │           ├── fig1.png
 │           ├── fig2.png
 │           └── ...
-├── papers/                      # 论文笔记（以 arxiv ID 命名）
+├── papers/
 │   ├── index/                   # Obsidian Bases 索引
-│   │   ├── 全部论文.base
-│   │   ├── 强化学习.base
+│   │   ├── All-Papers.base
+│   │   ├── Reinforcement-Learning.base
 │   │   └── ...
-│   └── 2601.05242.md
+│   └── notes/                   # 论文笔记（以 arxiv ID 命名）
+│       └── 2601.05242.md
 └── knowledge/
     └── Summary/                 # 综述报告
 ```
@@ -47,7 +48,7 @@ vault/
 
 ### Step 0: 查重
 
-先检查 `$OBSIDIAN_VAULT/papers/{ARXIV_ID}.md` 是否已存在。如果已存在，告知用户该论文已有笔记，跳过下载和生成，直接进入下一篇（如果有多篇的话）。
+先检查 `$OBSIDIAN_VAULT/papers/notes/{ARXIV_ID}.md` 是否已存在。如果已存在，告知用户该论文已有笔记，跳过下载和生成，直接进入下一篇（如果有多篇的话）。
 
 ### Step 1: 下载 PDF
 
@@ -76,7 +77,7 @@ curl -sL "https://arxiv.org/pdf/$ARXIV_ID.pdf" \
 - 哪些 Figure 需要引用（至少包含 Figure 1 和方法图）
 
 确认以上信息后，再严格按照下面的模板生成笔记。
-写入 `$OBSIDIAN_VAULT/papers/` 目录。
+写入 `$OBSIDIAN_VAULT/papers/notes/` 目录。
 
 **文件命名规则：** 使用 arxiv ID 作为文件名，如 `2601.05242.md`。这样保证唯一性，且 Obsidian wikilink 可以直接用 `[[2601.05242]]` 链接。
 
@@ -142,7 +143,7 @@ date_added: YYYY-MM-DD
 
 - **作者：** 作者1, 作者2 等（机构）
 - **发表：** 会议/期刊, 月份 年份
-- **链接：** [arXiv](https://arxiv.org/abs/xxxx.xxxxx) | [PDF](../assets/pdfs/xxxx.xxxxx.pdf) | [项目主页](如有)
+- **链接：** [arXiv](https://arxiv.org/abs/xxxx.xxxxx) | [PDF](../../assets/pdfs/xxxx.xxxxx.pdf) | [项目主页](如有)
 
 ---
 
@@ -150,7 +151,7 @@ date_added: YYYY-MM-DD
 
 用 3-5 段话详细说明背景、问题、现有方法的不足。
 
-![Figure X: 说明|600](../assets/png/xxxx.xxxxx/fig1.png)
+![Figure X: 说明|600](../../assets/png/xxxx.xxxxx/fig1.png)
 *Figure X: 中文说明*
 
 ---
@@ -159,7 +160,7 @@ date_added: YYYY-MM-DD
 
 像写技术博客一样分步骤讲解。可以用公式，但每个公式都要有直觉解释。
 
-![Figure X: 方法概览|600](../assets/png/xxxx.xxxxx/fig2.png)
+![Figure X: 方法概览|600](../../assets/png/xxxx.xxxxx/fig2.png)
 *Figure X: 中文说明*
 
 ---
@@ -168,7 +169,7 @@ date_added: YYYY-MM-DD
 
 用自然语言描述关键发现，辅以具体数字。不要直接贴表格。
 
-![Figure X: 实验结果|600](../assets/png/xxxx.xxxxx/fig3.png)
+![Figure X: 实验结果|600](../../assets/png/xxxx.xxxxx/fig3.png)
 *Figure X: 中文说明*
 
 ---
@@ -205,13 +206,13 @@ date_added: YYYY-MM-DD
 ## 图片路径规则
 
 所有图片统一存放在 `assets/png/{arxiv_id}/` 下。
-笔记中引用图片使用相对路径，并加 `|600` 控制宽度：`![Figure X: 说明|600](../assets/png/{arxiv_id}/figX.png)`
-（因为笔记在 `papers/` 目录下，需要 `../` 回到 vault 根目录）
+笔记中引用图片使用相对路径，并加 `|600` 控制宽度：`![Figure X: 说明|600](../../assets/png/{arxiv_id}/figX.png)`
+（因为笔记在 `papers/notes/` 目录下，需要 `../../` 回到 vault 根目录）
 
 也可以使用 arxiv HTML 的在线 URL 作为图片源（无需下载）：
 `![Figure X: 说明|600](https://arxiv.org/html/{arxiv_id}v1/x1.png)`
 
-PDF 链接同理：`../assets/pdfs/{arxiv_id}.pdf`
+PDF 链接同理：`../../assets/pdfs/{arxiv_id}.pdf`
 
 ## 不需要的内容
 
