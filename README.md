@@ -68,18 +68,18 @@ Generate structured survey reports from multiple related papers. Designed as int
 
 ```bash
 # Install all skills
-npx skills add your-username/paper-skill --all
+npx skills add Chang-pw/paper2obsidian_skill --all
 
 # Install specific skill
-npx skills add your-username/paper-skill --skill read-arxiv-paper
+npx skills add Chang-pw/paper2obsidian_skill --skill read-arxiv-paper
 
 # Install to specific agent
-npx skills add your-username/paper-skill -a opencode --all
-npx skills add your-username/paper-skill -a claude-code --all
+npx skills add Chang-pw/paper2obsidian_skill -a opencode --all
+npx skills add Chang-pw/paper2obsidian_skill -a claude-code --all
 
 # Update (re-install latest)
 npx skills remove read-arxiv-paper paper-index paper-summary
-npx skills add your-username/paper-skill --all
+npx skills add Chang-pw/paper2obsidian_skill --all
 ```
 
 ## Prerequisites
@@ -147,7 +147,7 @@ Fork this repo and edit the SKILL.md files to fit your needs:
 ## Skill Structure
 
 ```
-paper-skill/
+paper2obsidian_skill/
 ├── skills/
 │   ├── read-arxiv-paper/
 │   │   └── SKILL.md          # Paper reading & note generation
@@ -187,17 +187,17 @@ MIT
 
 ```bash
 # 安装所有 skills
-npx skills add your-username/paper-skill --all
+npx skills add Chang-pw/paper2obsidian_skill --all
 
 # 只安装特定 skill
-npx skills add your-username/paper-skill --skill read-arxiv-paper
+npx skills add Chang-pw/paper2obsidian_skill --skill read-arxiv-paper
 
 # 安装到指定 agent
-npx skills add your-username/paper-skill -a opencode --all
+npx skills add Chang-pw/paper2obsidian_skill -a opencode --all
 
 # 更新（重新安装最新版）
 npx skills remove read-arxiv-paper paper-index paper-summary
-npx skills add your-username/paper-skill --all
+npx skills add Chang-pw/paper2obsidian_skill --all
 ```
 
 ### 前置依赖
